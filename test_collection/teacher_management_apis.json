@@ -1,0 +1,1066 @@
+{
+  "info": {
+    "_postman_id": "95f26580-2332-4e9f-93f9-375070b54ef8",
+    "name": "Teacher Management APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52409080",
+    "_collection_link": "https://go.postman.co/collection/52409080-95f26580-2332-4e9f-93f9-375070b54ef8?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Authorization token validation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const login_token = pm.response.json().authToken;\r",
+                  "pm.environment.set(\"token\", login_token);\r",
+                  "\r",
+                  "// Status code validation code.\r",
+                  "pm.test(\"Status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Token exists in response validation code.\r",
+                  "pm.test(\"Token exists in response\", () => {\r",
+                  "    pm.expect(login_token).to.not.be.undefined;\r",
+                  "});\r",
+                  "\r",
+                  "// Token isn't empty validation code.\r",
+                  "pm.test(\"Token is not empty\", () => {\r",
+                  "    pm.expect(login_token).to.not.be.empty;\r",
+                  "});\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"password123\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Teachers CRUD",
+      "item": [
+        {
+          "name": "New teacher creation vs response validation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Teacher id creation.\r",
+                  "const teacherId = Math.floor(Math.random() * 100000);\r",
+                  "pm.environment.set(\"teacherId\", teacherId);\r",
+                  "\r",
+                  "// Creating random department for teacher.\r",
+                  "let departments = [\"CSE\", \"BBA\", \"MBA\", \"LAW\", \"PHARMACY\", \"ENGLISH\"];\r",
+                  "let randomDepartment = departments[Math.floor(Math.random() * departments.length)];\r",
+                  "pm.environment.set(\"department\", randomDepartment);\r",
+                  "\r",
+                  "// Selecting random designations for teacher.\r",
+                  "let designations = [\"Professor\", \"Associate Professor\", \"Assistant Professor\", \"Lecturer\", \"Instructor\"];\r",
+                  "let randomDesignation = designations[Math.floor(Math.random() * designations.length)];\r",
+                  "pm.environment.set(\"designation\", randomDesignation);\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code validation.\r",
+                  "pm.test(\"Status code is 201/200\", () => {\r",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+                  "});\r",
+                  "\r",
+                  "// Id exist in response validation.\r",
+                  "pm.test(\"ID exist in response body\", () => {\r",
+                  "    pm.expect(pm.response.json()._id).not.to.be.null;\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "// Response body vs Request body validation code.\r",
+                  "const responseData = pm.response.json();\r",
+                  "const requestData = JSON.parse(pm.request.body.raw);\r",
+                  "\r",
+                  "// Teacher name matches in both response and request validation code\r",
+                  "pm.test(\"Teacher name matches in both response and request\", () => {\r",
+                  "    pm.expect(responseData.name).to.eql(requestData.name);\r",
+                  "});\r",
+                  "\r",
+                  "// Teacher email matches in both response and request validation code \r",
+                  "pm.test(\"Teacher email mathces in both response and request\", () => {\r",
+                  "    pm.expect(responseData.email).to.eql(requestData.email);\r",
+                  "});\r",
+                  "\r",
+                  "// Teacher department matches in both response and request validation code.\r",
+                  "pm.test(\"Teacher department matches in both response and request\", () => {\r",
+                  "    pm.expect(responseData.department).to.eql(requestData.department);\r",
+                  "});\r",
+                  "\r",
+                  "// Teacher Id matches in both response and request validation code.\r",
+                  "pm.test(\"Teacher Id matches in both response and request\", () => {\r",
+                  "    pm.expect(responseData.teacherId).to.eql(requestData.teacherId);\r",
+                  "});\r",
+                  "\r",
+                  "// Teacher designation matches in both response and request validation code.\r",
+                  "pm.test(\"Teacher designation matches in both response and request\", () => {\r",
+                  "    pm.expect(responseData.designation).to.eql(requestData.designation);\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "\r",
+                  "\r",
+                  "\r",
+                  "\r",
+                  "\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Test {{$randomUserName}}\",\r\n    \"email\" : \"{{$randomEmail}}\",\r\n    \"department\" : \"{{department}}\",\r\n    \"teacherId\" : {{teacherId}},\r\n    \"designation\" : \"Test professor\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "All teacher list api",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Response code test\r",
+                  "pm.test(\"Status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "})\r",
+                  "\r",
+                  "// Valid schema structure\r",
+                  "const schema = {\r",
+                  "    \"type\": \"array\",\r",
+                  "    \"items\": {\r",
+                  "        \"type\": \"object\",\r",
+                  "        \"required\": [\"_id\", \"name\", \"email\", \"designation\", \"teacherId\", \"department\"],\r",
+                  "        \"properties\": {\r",
+                  "            \"_id\": { \"type\": \"string\" },\r",
+                  "            \"name\": { \"type\": \"string\" },\r",
+                  "            \"email\": { \"type\": \"string\" },\r",
+                  "            \"designation\": { \"type\": \"string\" },\r",
+                  "            \"teacherId\": { \"type\": \"number\" },\r",
+                  "            \"department\": { \"type\": \"string\" }\r",
+                  "        }\r",
+                  "    }\r",
+                  "};\r",
+                  "\r",
+                  "let responseData = pm.response.json();\r",
+                  "\r",
+                  "// Storing random email in environment variables\r",
+                  "const index = Math.floor(Math.random() * responseData.length);\r",
+                  "pm.environment.set(\"randomEmail\", responseData[index].email);\r",
+                  "\r",
+                  "// Schema validation test code.\r",
+                  "pm.test(\"Schema is valid\", () => {\r",
+                  "    let valid = tv4.validate(responseData, schema);\r",
+                  "    pm.expect(valid).to.be.true;\r",
+                  "});\r",
+                  "\r",
+                  "// Validate teacherId from environment variables exist in response.\r",
+                  "pm.test(\"teacherId from environment variables exist in response\", () => {\r",
+                  "    let teacherId = pm.environment.get(\"teacherId\");\r",
+                  "    let found = false;\r",
+                  "    responseData.forEach((teacher) => {\r",
+                  "        if(teacher.teacherId == teacherId) {\r",
+                  "            found = true;\r",
+                  "            return;\r",
+                  "        }\r",
+                  "    });\r",
+                  "    pm.expect(found).to.be.true;\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Department filter validation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code validation.\r",
+                  "pm.test(\"Status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Department filter validation code.\r",
+                  "const responseData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Department filter is working\", () => {\r",
+                  "    responseData.forEach((teacher) => {\r",
+                  "        pm.expect(teacher.department).to.eql(pm.environment.get(\"department\"));\r",
+                  "    });\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teacher?department={{department}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ],
+              "query": [
+                {
+                  "key": "department",
+                  "value": "{{department}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Email filter validation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code validation.\r",
+                  "pm.test(\"Status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Email filter validation code.\r",
+                  "const responseData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Email filter is working\", () => {\r",
+                  "    responseData.forEach((teacher) => {\r",
+                  "        pm.expect(teacher.email).to.eql(pm.environment.get(\"randomEmail\"));\r",
+                  "    });\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teacher?email={{randomEmail}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "{{randomEmail}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Teacher id filter validation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code validation.\r",
+                  "pm.test(\"Status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Teacher Id filter validation code.\r",
+                  "pm.test(\"Teacher Id filter is working\", () => {\r",
+                  "    pm.expect(pm.response.json().teacherId).to.eql(pm.environment.get(\"teacherId\"));\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teacher/{{teacherId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher",
+                "{{teacherId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update fields of teacher validation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Selecting random department for teacher.\r",
+                  "let departments = [\"CSE\", \"BBA\", \"MBA\", \"LAW\", \"PHARMACY\", \"ENGLISH\"];\r",
+                  "let randomDepartment = departments[Math.floor(Math.random() * departments.length)];\r",
+                  "pm.environment.set(\"department\", randomDepartment);\r",
+                  "\r",
+                  "// Selecting random designations for teacher.\r",
+                  "let designations = [\"Professor\", \"Associate Professor\", \"Assistant Professor\", \"Lecturer\", \"Instructor\"];\r",
+                  "let randomDesignation = designations[Math.floor(Math.random() * designations.length)];\r",
+                  "pm.environment.set(\"designation\", randomDesignation);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code validation\r",
+                  "pm.test(\"Status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const responseData = pm.response.json();\r",
+                  "const requestData = JSON.parse(pm.request.body.raw);\r",
+                  "\r",
+                  "// Name field updation successfull validation.\r",
+                  "pm.test(\"Name field is updated correctly\", () => {\r",
+                  "    pm.expect(responseData.name).to.eql(requestData.name);\r",
+                  "});\r",
+                  "\r",
+                  "// Email field updation successfull validation.\r",
+                  "pm.test(\"Email field is updated correctly\", () => {\r",
+                  "    pm.expect(responseData.email).to.eql(requestData.email);\r",
+                  "});\r",
+                  "\r",
+                  "// Department field updation successfull validation.\r",
+                  "pm.test(\"Department field is updated correctly\", () => {\r",
+                  "    pm.expect(responseData.department).to.eql(requestData.department);\r",
+                  "});\r",
+                  "// Designation field updation successfull validation.\r",
+                  "pm.test(\"Designation field is updated correctly\", () => {\r",
+                  "    pm.expect(responseData.designation).to.eql(requestData.designation);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Test {{$randomUserName}}\",\r\n    \"email\" : \"{{$randomEmail}}\",\r\n    \"department\" : \"{{department}}\",\r\n    \"designation\" : \"{{designation}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher/{{teacherId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher",
+                "{{teacherId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete teacher by Id validation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 200 / 204.\r",
+                  "pm.test(\"Status code is 200 / 204\", () => {\r",
+                  "    pm.response.to.have.status(200 || 204);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teacher/{{teacherId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher",
+                "{{teacherId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get teacher by ID (after delete)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 404.\r",
+                  "pm.test(\"Status code is 404\", () => {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teacher/{{teacherId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher",
+                "{{teacherId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Negative Tests",
+      "item": [
+        {
+          "name": "Login with wrong credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 401 validation code.\r",
+                  "pm.test(\"Status code is 401\", () => {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});\r",
+                  "\r",
+                  "// Response body contains the correct error message.\r",
+                  "pm.test(\"Response body contains error message\", () => {\r",
+                  "    const errorMessage = \"Invalid credentials\";\r",
+                  "    pm.expect(pm.response.text()).to.include(errorMessage);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"adm\",\r\n    \"password\": \"passwod123\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Access teachers without tokens",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 401 validation.\r",
+                  "pm.test(\"Status code is 401 validation\", () => {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "});\r",
+                  "\r",
+                  "// Response body contains the correct error message.\r",
+                  "pm.test(\"Response body contains the correct error message\", () => {\r",
+                  "    const errorMessage = \"Missing or invalid Authorization header\";\r",
+                  "    pm.expect(pm.response.text()).to.include(errorMessage);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"adm\",\r\n    \"password\": \"passwod123\"\r\n}\r\n"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get teacher with invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 200 validation\r",
+                  "pm.test(\"Status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Response body is an empyt array validation.\r",
+                  "pm.test(\"Response body is an empty array\", () => {\r",
+                  "    pm.expect(pm.response.json()).to.deep.equal([]);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/teacher?teacherId=9999999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ],
+              "query": [
+                {
+                  "key": "teacherId",
+                  "value": "9999999999"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create teacher without name (required field)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 400 validation.\r",
+                  "pm.test(\"Status code is 400 validation\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "// Response body has correct error message.\r",
+                  "pm.test(\"Response body has correct error message\", () => {\r",
+                  "    const errorMessage = \"Name is required\";\r",
+                  "    pm.expect(pm.response.json().error).to.eql(errorMessage);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\" : \"{{$randomEmail}}\",\r\n    \"department\" : \"{{department}}\",\r\n    \"teacherId\" : {{teacherId}},\r\n    \"designation\" : \"Test professor\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create teacher without email (required field)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 400 validation.\r",
+                  "pm.test(\"Status code is 400 validation\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "// Response body has correct error message.\r",
+                  "pm.test(\"Response body has correct error message\", () => {\r",
+                  "    const errorMessage = \"Email is required\";\r",
+                  "    pm.expect(pm.response.json().error).to.eql(errorMessage);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Test {{$randomUserName}}\",\r\n    \"department\" : \"{{department}}\",\r\n    \"teacherId\" : {{teacherId}},\r\n    \"designation\" : \"Test professor\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create teacher without department (required field)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 400 validation.\r",
+                  "pm.test(\"Status code is 400 validation\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "// Response body has correct error message.\r",
+                  "pm.test(\"Response body has correct error message\", () => {\r",
+                  "    const errorMessage = \"Department is required\";\r",
+                  "    pm.expect(pm.response.json().error).to.eql(errorMessage);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Test {{$randomUserName}}\",\r\n    \"email\" : \"{{$randomEmail}}\",\r\n    \"teacherId\" : {{teacherId}},\r\n    \"designation\" : \"Test professor\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create teacher without designation (required field)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 400 validation.\r",
+                  "pm.test(\"Status code is 400 validation\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "// Response body has correct error message.\r",
+                  "pm.test(\"Response body has correct error message\", () => {\r",
+                  "    const errorMessage = \"Designation is required\";\r",
+                  "    pm.expect(pm.response.json().error).to.eql(errorMessage);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Test {{$randomUserName}}\",\r\n    \"email\" : \"{{$randomEmail}}\",\r\n    \"department\" : \"{{department}}\",\r\n    \"teacherId\" : {{teacherId}}\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create teacher without teacherId (required field)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status code is 400 validation.\r",
+                  "pm.test(\"Status code is 400 validation\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "// Response body has correct error message.\r",
+                  "pm.test(\"Response body has correct error message\", () => {\r",
+                  "    const errorMessage = \"Teacher ID is required\";\r",
+                  "    pm.expect(pm.response.json().error).to.eql(errorMessage);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Test {{$randomUserName}}\",\r\n    \"email\" : \"{{$randomEmail}}\",\r\n    \"department\" : \"{{department}}\",\r\n    \"designation\" : \"Test {{designation}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "teacher"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
