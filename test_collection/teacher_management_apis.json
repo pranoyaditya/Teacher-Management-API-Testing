@@ -697,7 +697,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"username\": \"adm\",\r\n    \"password\": \"passwod123\"\r\n}\r\n"
+              "raw": "\r\n"
             },
             "url": {
               "raw": "{{base_url}}/api/teacher",
