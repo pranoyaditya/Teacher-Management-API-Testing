@@ -146,7 +146,7 @@ project-root
 ├── Reports
 │   └── report.html
 │
-└── Screenshots
+└── Screen_shots
     └── (all screenshot images go here)
 ```
 
@@ -172,7 +172,7 @@ The following resources are available in the Drive folder:
 Add your Google Drive folder link here
 
 ```
-PASTE DRIVE LINK
+https://drive.google.com/file/d/1YEJEMlDo81CD2mfj1VCPXN84fFdDioRC/view?usp=drive_link
 ```
 
 ---
